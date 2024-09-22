@@ -1,16 +1,10 @@
 const base64topdf = require('base64topdf');
 const fs = require('fs');
-const path = require('path');
 
+// POST request logic
 const handlePost = (req, res) => {
     const { data, file_b64 } = req.body;
-
-    // Basic validation
-    if (!Array.isArray(data)) {
-        return res.status(400).json({ is_success: false, message: 'Invalid data format' });
-    }
-
-    const user_id = 'shivanshu_singh_12092003'; // Change to your details
+    const user_id = req.user.id; // Use authenticated user ID
     const email = "sr5752@srmist.edu.in";
     const roll_number = "RA2111031010040";
 
@@ -30,21 +24,19 @@ const handlePost = (req, res) => {
         }
     });
 
-    // File handling
+    // File handling (optional)
     let file_valid = false;
     let file_mime_type = '';
     let file_size_kb = 0;
 
     if (file_b64) {
         try {
-            const outputPath = path.join(__dirname, 'outputFile.pdf'); // Use .pdf for the output file
-            base64topdf.base64Decode(file_b64, outputPath);
-            const stats = fs.statSync(outputPath);
+            base64topdf.base64Decode(file_b64, 'outputFile');
+            const stats = fs.statSync('outputFile');
             file_size_kb = stats.size / 1024;
-            file_mime_type = 'application/pdf'; // Set to the correct MIME type
+            file_mime_type = 'image/png'; // Example, change as necessary
             file_valid = true;
         } catch (error) {
-            console.error('File processing error:', error);
             file_valid = false;
         }
     }
@@ -63,6 +55,7 @@ const handlePost = (req, res) => {
     });
 };
 
+// GET request logic
 const handleGet = (req, res) => {
     res.status(200).json({ operation_code: 1 });
 };
